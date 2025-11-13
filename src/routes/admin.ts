@@ -25,7 +25,7 @@ router.post('/domain', async (req: Request, res: Response) => {
     const { domain_name, price_usd, price_brl, whatsapp_number, afternic_url, active } = req.body;
 
     // Auto-convert USD to BRL if not provided
-    const finalPriceBrl = price_brl || await convertUsdToBrl(price_usd);
+    const finalPriceBrl = price_brl || await convertToBRL(price_usd);
 
     const domain = await prisma.domain.create({
       data: {
@@ -72,7 +72,7 @@ router.put('/domain/:id', async (req: Request, res: Response) => {
 
     // If price_usd is updated but price_brl is not provided, auto-convert
     if (updateData.price_usd && !updateData.price_brl) {
-      updateData.price_brl = await convertUsdToBrl(updateData.price_usd);
+      updateData.price_brl = await convertToBRL(updateData.price_usd);
     }
 
     const domain = await prisma.domain.update({
