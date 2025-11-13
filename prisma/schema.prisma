@@ -1,0 +1,23 @@
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Domain {
+  id            Int     @id @default(autoincrement())
+  domain_name   String  @unique
+  price_usd     Float
+  price_brl     Float
+  whatsapp_number String
+  afternic_url  String
+  active        Boolean @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("domains")
+}
