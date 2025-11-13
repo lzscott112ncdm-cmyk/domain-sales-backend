@@ -2,7 +2,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../utils/db';
 import { validateAdminToken } from '../middleware/auth';
-import { convertUsdToBrl } from '../utils/currency';
+import { convertToBRL } from "../utils/currency";
 import { validateCreateDomain, validateUpdateDomain } from '../utils/validation';
 
 const router = Router();
