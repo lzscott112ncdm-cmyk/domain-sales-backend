@@ -1,35 +1,26 @@
+import axios from "axios";
 
-/**
- * Fetches the current USD to BRL exchange rate
- */
-export async function getUsdToBrlRate(): Promise<number> {
-  try {
-    const response = await fetch(
-      'https://api.exchangerate.host/latest?base=USD&symbols=BRL'
-    );
-    
-    if (!response.ok) {
-      throw new Error('Exchange rate API request failed');
-    }
-    
-    const data = await response.json();
-    
-    if (data.rates && data.rates.BRL) {
-      return data.rates.BRL;
-    }
-    
-    throw new Error('BRL rate not found in response');
-  } catch (error) {
-    console.error('Error fetching exchange rate:', error);
-    // Fallback rate if API fails
-    return 5.5;
-  }
+export async function convertToBRL(amountUSD: number): Promise<number> {
+  const response = await axios.get("https://api.exchangerate.host/convert", {
+    params: { from: "USD", to: "BRL", amount: amountUSD },
+  });
+
+  // Tell TypeScript what the API returns
+  const data = response.data as {
+    result: number;
+  };
+
+  return data.result;
 }
 
-/**
- * Converts USD to BRL using current exchange rate
- */
-export async function convertUsdToBrl(usdAmount: number): Promise<number> {
-  const rate = await getUsdToBrlRate();
-  return Number((usdAmount * rate).toFixed(2));
+export async function convertToUSD(amountBRL: number): Promise<number> {
+  const response = await axios.get("https://api.exchangerate.host/convert", {
+    params: { from: "BRL", to: "USD", amount: amountBRL },
+  });
+
+  const data = response.data as {
+    result: number;
+  };
+
+  return data.result;
 }
