@@ -43,8 +43,11 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
 });
 
 // Start server
-app.listen(port, () => {
-  console.log(`🚀 Domain Marketplace Backend running on port ${port}`);
-  console.log(`📡 API available at http://localhost:${port}/api`);
-  console.log(`🏥 Health check at http://localhost:${port}/health`);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Domain Marketplace Backend running on port ${PORT}`);
+  console.log(`📡 API available at http://localhost:${PORT}/api`);
+  console.log(`🏥 Health check at http://localhost:${PORT}/health`);
 });
+
