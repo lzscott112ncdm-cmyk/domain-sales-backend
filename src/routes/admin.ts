@@ -77,9 +77,12 @@ router.put('/domain/:id', async (req: Request, res: Response) => {
     const updateData: any = { ...req.body };
 
     // If price_usd is updated but price_brl is not provided, auto-convert
-    if (updateData.price_usd && !updateData.price_brl) {
-      updateData.price_brl = await convertToBRL(updateData.price_usd);
-    }
+const USD_TO_BRL = 5.5;
+if (updateData.price_usd && !updateData.price_brl) {
+  updateData.price_brl =
+    Math.round(Number(updateData.price_usd) * USD_TO_BRL * 100) / 100;
+}
+
 
     const domain = await prisma.domain.update({
       where: { id },
