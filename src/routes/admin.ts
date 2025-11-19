@@ -2,7 +2,10 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../utils/db';
 import { validateAdminToken } from '../middleware/auth';
-import { convertToBRL } from "../utils/currency";
+// Simple fixed conversion rate for USD → BRL.
+// You can adjust this any time you want to update your pricing baseline.
+const USD_TO_BRL = 5.5; // <- pick the rate you want to use today
+
 import { validateCreateDomain, validateUpdateDomain } from '../utils/validation';
 
 const router = Router();
@@ -22,21 +25,24 @@ router.post('/domain', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Validation failed', details: validation.errors });
     }
 
-    const { domain_name, price_usd, price_brl, whatsapp_number, afternic_url, active } = req.body;
+   const { domain_name, price_usd, price_brl, whatsapp_number, afternic_url, active } = req.body;
 
-    // Auto-convert USD to BRL if not provided
-    const finalPriceBrl = price_brl || await convertToBRL(price_usd);
+// Auto-convert USD to BRL ONCE using a fixed rate if BRL was not provided
+const finalPriceBRL =
+  price_brl !== undefined && price_brl !== null
+    ? price_brl
+    : Math.round(Number(price_usd) * USD_TO_BRL * 100) / 100; // 2 decimal places
 
-    const domain = await prisma.domain.create({
-      data: {
-        domain_name,
-        price_usd,
-        price_brl: finalPriceBrl,
-        whatsapp_number,
-        afternic_url,
-        active: active !== undefined ? active : true,
-      },
-    });
+const domain = await prisma.domain.create({
+  data: {
+    domain_name,
+    price_usd,
+    price_brl: finalPriceBRL,
+    whatsapp_number,
+    afternic_url,
+    active: active !== undefined ? active : true,
+  },
+});
 
     res.status(201).json(domain);
   } catch (error: any) {
