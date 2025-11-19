@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// src/utils/currency.ts
+export const USD_TO_BRL = 5.5; // master conversion rate
+
 export async function convertToBRL(amountUSD: number): Promise<number> {
   const response = await axios.get("https://api.exchangerate.host/convert", {
     params: { from: "USD", to: "BRL", amount: amountUSD },
