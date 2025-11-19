@@ -1,31 +1,39 @@
-import prisma from '../src/utils/db';
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
+
+// 🔹 Set your exchange rate here
 const USD_TO_BRL = 5.5;
 
-async function main() {
-  console.log("📌 Recalculating BRL prices based on USD...");
+async function recalcPrices() {
+  console.log("🔄 Recalculating BRL prices based on USD...");
 
+  // Get all domains
   const domains = await prisma.domain.findMany();
 
   for (const domain of domains) {
-    if (!domain.price_usd) continue;
+    if (!domain.priceUSD) continue; // skip if missing price
 
-    const newBRL = Math.round(Number(domain.price_usd) * USD_TO_BRL * 100) / 100;
+    const newBRL = Math.round(domain.priceUSD * USD_TO_BRL);
 
     await prisma.domain.update({
       where: { id: domain.id },
-      data: { price_brl: newBRL }
+      data: { priceBRL: newBRL }
     });
 
-    console.log(`Updated ${domain.domain_name} → R$ ${newBRL}`);
+    console.log(
+      `✔ Updated: ${domain.name} | USD: $${domain.priceUSD} → BRL: R$${newBRL}`
+    );
   }
 
-  console.log("✅ Done! All BRL prices updated.");
-  process.exit();
+  console.log("✅ All BRL prices recalculated!");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
-
+recalcPrices()
+  .catch((err) => {
+    console.error("❌ Error recalculating prices:", err);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+    console.log("🔌 Database disconnected.");
+  });
