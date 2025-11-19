@@ -13,9 +13,8 @@
     "prisma:studio": "prisma studio",
     "prisma:db-push": "prisma db push",
     "postinstall": "prisma db push",
-    "recalc:brl": "ts-node scripts/recalculate-prices.ts"
-
-  },
+    "recalc:brl": "tsx scripts/recalculate-prices.ts"
+ },
   "keywords": ["domain", "marketplace", "api", "express"],
   "author": "",
   "license": "MIT",
