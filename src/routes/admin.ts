@@ -2,9 +2,8 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../utils/db';
 import { validateAdminToken } from '../middleware/auth';
-// Simple fixed conversion rate for USD → BRL.
-// You can adjust this any time you want to update your pricing baseline.
-const USD_TO_BRL = 5.5; // <- pick the rate you want to use today
+import { USD_TO_BRL } from '../utils/currency';
+
 
 import { validateCreateDomain, validateUpdateDomain } from '../utils/validation';
 
@@ -77,7 +76,6 @@ router.put('/domain/:id', async (req: Request, res: Response) => {
     const updateData: any = { ...req.body };
 
     // If price_usd is updated but price_brl is not provided, auto-convert
-const USD_TO_BRL = 5.5;
 if (updateData.price_usd && !updateData.price_brl) {
   updateData.price_brl =
     Math.round(Number(updateData.price_usd) * USD_TO_BRL * 100) / 100;
